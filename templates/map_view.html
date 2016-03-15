@@ -118,9 +118,19 @@ function calcRoute() {
     }
     directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
     var travelMode = google.maps.DirectionsTravelMode.DRIVING
+    var waypoints = []
+    /*
+    false position
+    var waypoints = []
+    {% for point in waypoints%}
+      waypoints.add(new google.maps.LatLng(point))
+    {% endfor %}
+    waypoints.add(new google.maps.LatLng(marker.position));
+    */
     var request = {
         origin: {lat: {{start_lat}}, lng: {{start_lng}}},
         destination: {lat: {{end_lat}}, lng: {{end_lng}}},
+        waypoints: [],
         travelMode: travelMode
     };
 
