@@ -21,8 +21,8 @@
           Enter start and end addresses.<br />
           <strong> This example journey takes us from Patrick's St, Cork, Ireland to The Square, Blarney, Cork, Ireland.</strong><br />
           Based on Google Maps Latitude, Longitude... just press the start button<br />
-          <input type="text" size="80" maxlength="200" id="startpoint" value="Patrick's St, Cork, Ireland" /><br />
-          <input type="text" size="80" maxlength="200" id="endpoint" value="The Square, Blarney, Cork, Ireland" /><br />
+          <input type="text" size="80" maxlength="200" id="startpoint" value="Berlin, Germany" /><br />
+          <input type="text" size="80" maxlength="200" id="endpoint" value="Potsdam, Germany" /><br />
           <!-- <input type="text" size="80" maxlength="200" id="startpoint" value="51.942638,-7.858014" /><br>
             <input type="text" size="80" maxlength="200" id="endpoint" value="52.009586,-7.912860" /><br> -->
           <input type="submit" value="Start"  />
@@ -47,12 +47,6 @@
             
               var poly;          
               var eol;          
-                      var marker = new google.maps.Marker({
-          map: map,
-          position: {lat:41.85, lng: -87.65},
-          icon: '/static/jan-64.png',
-          title: 'Jan'
-        });
               var car = new google.maps.Marker({          
                     map: map,
                     position: {lat:41.85, lng: -87.65},
@@ -110,7 +104,7 @@
           
           
           
-            google.maps.event.addListener(map.direction,"load", function() {
+            map.addListener(map.direction,"load", function() {
           
               document.getElementById("controls").style.display="none";          
               poly=map.direction.getPolyline();          
@@ -126,17 +120,16 @@
           
             });          
           
-            google.maps.event.addListener(map.direction,"error", function() {
+            map.addListener(map.direction,"error", function() {
               alert("Location(s) not recognised. Code: "+map.direction.getStatus().code);          
             });                   
-          
-            function start() {
+          }
+          function start() {
           
               var startpoint = document.getElementById("startpoint").value;          
               var endpoint = document.getElementById("endpoint").value;          
               map.direction.loadFromWaypoints([startpoint,endpoint],{getPolyline:true,getSteps:true});          
-            }   
-          }
+          } 
           //]]>
           
         </script>
