@@ -3,7 +3,7 @@ import pyhdb
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
-connection = pyhdb.connect(host="172.20.40.16", port=30015, user="TEAM20_USER01", password="c35vfdE0ivk6553")
+# connection = pyhdb.connect(host="172.20.40.16", port=30015, user="TEAM20_USER01", password="c35vfdE0ivk6553")
 
 
 @app.route('/')
