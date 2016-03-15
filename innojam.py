@@ -25,7 +25,9 @@ def app_view():
 
 @app.route('/map')
 def map_view():
-    return render_template("map_view.html")
+    start = {"lat": 52.3795836, "lng": 9.6213878}
+    end = {"lat": 52.41, "lng": 10.6368185}
+    return render_template("map_view.html", start_lat=start["lat"], start_lng=start["lng"], end_lat=end["lat"], end_lng=end["lng"])
 
 if __name__ == '__main__':
     app.run()
