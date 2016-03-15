@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 import pyhdb
+import json
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
@@ -16,6 +17,7 @@ def db():
     cursor.execute("SELECT * FROM TEAM20_USER01.TEST")
     result = cursor.fetchone()
     if result:
+        print result[0]
         return result
     return "No Results"
 
