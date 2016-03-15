@@ -25,8 +25,8 @@
     {% block scripts %}
     <script>
       function initMap() {
-        var chicago = {lat: 41.85, lng: -87.65};
-        var indianapolis = {lat: 39.79, lng: -86.14};
+        var wolfsburg = {lat: 52.41, lng: 10.6368185};
+        var hannover = {lat: 52.3795836, lng: 9.6213878};
 
         var myLatLng = {lat: 52.520007, lng: 13.404954};
         // Create a map object and specify the DOM element for display.
@@ -36,15 +36,15 @@
           zoom: 10
         });
         // Create a marker and set its position.
-        var marker = new google.maps.Marker({
+        var jan = new google.maps.Marker({
           map: map,
-          position: {lat:41.85, lng: -87.65},
+          position: wolfsburg,
           icon: '/static/jan-64.png',
           title: 'Jan'
         });
-        var marker = new google.maps.Marker({
+        var robert = new google.maps.Marker({
           map: map,
-          position: {lat:39.79, lng: -86.14},
+          position: hannover,
           icon: '/static/robert-64.png',
           title: 'Robert'
         });
@@ -54,8 +54,8 @@
 
         // Set destination, origin and travel mode.
         var request = {
-          destination: indianapolis,
-          origin: chicago,
+          destination: hannover,
+          origin: wolfsburg,
           travelMode: google.maps.TravelMode.DRIVING
         };
 
@@ -65,6 +65,7 @@
           if (status == google.maps.DirectionsStatus.OK) {
           // Display the route on the map.
             directionsDisplay.setDirections(response);
+            console.log(JSON.stringify(response))
           }
         });
       }
