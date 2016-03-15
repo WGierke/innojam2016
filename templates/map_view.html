@@ -171,6 +171,40 @@ function calcRoute() {
     });
 }
 
+function receiveRequest(){
+  var redirectingDisplay = new google.maps.DirectionsRenderer({
+    map: map
+  })
+  var waypoints = []
+  {% for point in waypoints%}
+    waypoints.add(new google.maps.LatLng(point))
+  {% endfor %}
+  waypoints.add(new google.maps.LatLng(marker.position));
+  /*
+  var rideSharingRequest = {
+    origin: {lat: {{start_lat}}, lng: {{start_lng}}},
+    destination: {lat: {{end_lat}}, lng: {{end_lng}}},
+    waypoints: waypoints
+  }
+  */
+  var rideSharingRequest = {
+    origin: {lat: {{start_lat}}, lng: {{start_lng}}},
+    destination: {lat: {{end_lat}}, lng: {{end_lng}}},
+    waypoints: waypoints
+  }
+  var redirectionsService = new google.maps.DirectionsService();
+  redirectionsService.route(rideSharingRequest, function(response, status){
+    if (status == google.maps.DirectionsStatus.OK){
+      redirectingDisplay.setDirections(response)
+    }
+  })
+  
+}
+
+function acceptRequest(){
+  
+}
+
 
 var step = 10;
 var tick = 100;
