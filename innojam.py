@@ -23,5 +23,9 @@ def db():
 def app_view():
     return render_template("app_view.html")
 
+@app.route('/map')
+def map_view():
+    return render_template("map_view.html")
+
 if __name__ == '__main__':
     app.run()
