@@ -19,5 +19,9 @@ def db():
         return result
     return "No Results"
 
+@app.route('/app')
+def app_view():
+    return render_template("app_view.html")
+
 if __name__ == '__main__':
     app.run()
