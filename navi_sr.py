@@ -1,6 +1,7 @@
 import speech_recognition as sr
 
 recognizer = sr.Recognizer()
+recognizer.energy_threshold = 3000
 
 def get_audio():
     with sr.Microphone() as source:
