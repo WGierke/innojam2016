@@ -1,6 +1,3 @@
-__author__ = 'Aron'
-import sphinxbase
-import pocketsphinx
 import speech_recognition as sr
 
 recognizer = sr.Recognizer()
@@ -10,10 +7,8 @@ def get_audio():
         audio = recognizer.listen(source)
     return audio
 
-def get_word():
-    word = recognizer.recognize_sphinx(get_audio())
-    print word
-    return word
+def said_yes():
+    return "yes" in recognizer.recognize_google(get_audio())
 
 
-get_word()
+print said_yes()
