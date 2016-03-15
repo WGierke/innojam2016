@@ -104,7 +104,7 @@ GPolygon.prototype.Bounds = function() {
 
 // === A method which returns a GLatLng of a point a given distance along the path ===
 // === Returns null if the path is shorter than the specified distance ===
-GPolygon.prototype.GetPointAtDistance = function(metres) {
+google.maps.Polygon.prototype.GetPointAtDistance = function(metres) {
   // some awkward special cases
   if (metres == 0) return this.getVertex(0);
   if (metres < 0) return null;
@@ -118,12 +118,12 @@ GPolygon.prototype.GetPointAtDistance = function(metres) {
   var p1= this.getVertex(i-2);
   var p2= this.getVertex(i-1);
   var m = (metres-olddist)/(dist-olddist);
-  return new GLatLng( p1.lat() + (p2.lat()-p1.lat())*m, p1.lng() + (p2.lng()-p1.lng())*m);
+  return new google.maps.LatLng( p1.lat() + (p2.lat()-p1.lat())*m, p1.lng() + (p2.lng()-p1.lng())*m);
 }
 
 // === A method which returns the Vertex number at a given distance along the path ===
 // === Returns null if the path is shorter than the specified distance ===
-GPolygon.prototype.GetIndexAtDistance = function(metres) {
+google.maps.Polygon.prototype.GetIndexAtDistance = function(metres) {
   // some awkward special cases
   if (metres == 0) return this.getVertex(0);
   if (metres < 0) return null;
@@ -141,7 +141,7 @@ GPolygon.prototype.GetIndexAtDistance = function(metres) {
 // === If v1 is null, it returns the bearing between the first and last vertex ===
 // === If v1 is present but v2 is null, returns the bearing from v1 to the next vertex ===
 // === If either vertex is out of range, returns void ===
-GPolygon.prototype.Bearing = function(v1,v2) {
+google.maps.Polygon.prototype.Bearing = function(v1,v2) {
   if (v1 == null) {
     v1 = 0;
     v2 = this.getVertexCount()-1;
@@ -170,13 +170,13 @@ GPolygon.prototype.Bearing = function(v1,v2) {
 
 
 // === Copy all the above functions to GPolyline ===
-GPolyline.prototype.Contains             = GPolygon.prototype.Contains;
-GPolyline.prototype.Area                 = GPolygon.prototype.Area;
-GPolyline.prototype.Distance             = GPolygon.prototype.Distance;
-GPolyline.prototype.Bounds               = GPolygon.prototype.Bounds;
-GPolyline.prototype.GetPointAtDistance   = GPolygon.prototype.GetPointAtDistance;
-GPolyline.prototype.GetIndexAtDistance   = GPolygon.prototype.GetIndexAtDistance;
-GPolyline.prototype.Bearing              = GPolygon.prototype.Bearing;
+google.maps.Polyline.prototype.Contains             = google.maps.Polygon.prototype.Contains;
+google.maps.Polyline.prototype.Area                 = google.maps.Polygon.prototype.Area;
+google.maps.Polyline.prototype.Distance             = google.maps.Polygon.prototype.Distance;
+google.maps.Polyline.prototype.Bounds               = google.maps.Polygon.prototype.Bounds;
+google.maps.Polyline.prototype.GetPointAtDistance   = google.maps.Polygon.prototype.GetPointAtDistance;
+google.maps.Polyline.prototype.GetIndexAtDistance   = google.maps.Polygon.prototype.GetIndexAtDistance;
+google.maps.Polyline.prototype.Bearing              = google.maps.Polygon.prototype.Bearing;
 
 
 
