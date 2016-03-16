@@ -22,9 +22,10 @@ We think that there will be a fleet of autonomous cars transporting users in the
 - App:  
     should run on HANA Cloud Platform
 
-## Screenshots/Demo
-Server:  
+## Screenshots/Links
+### Server:  
 ![Picture](http://i.imgur.com/mmiQc03.jpg)
 
-[App](https://joinmyride-p1861604418trial.dispatcher.hanatrial.ondemand.com)
+### App
+[Link to deployed app](https://joinmyride-p1861604418trial.dispatcher.hanatrial.ondemand.com)
 ![Picture](http://i.imgur.com/cdTW13B.png)
