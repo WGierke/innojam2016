@@ -33,8 +33,8 @@
 			var end = {lat: {{ end_lat }}, lng: {{ end_lng }}};
 			var travelMode = google.maps.DirectionsTravelMode.DRIVING;
 
-			function createMarkerWithImage(latlng, label, html, img) {
-			        var contentString = '<b>' + label + '</b><br>' + html;
+			function createMarkerWithImage(latlng, label, img) {
+			        var contentString = '<b>' + label + '</b>';
 			        var marker = new google.maps.Marker({
 			            position: latlng,
 			            map: map,
@@ -50,8 +50,8 @@
 			        return marker;
 			    }
 
-			function createMarker(latlng, label, html) {
-			    var contentString = '<b>' + label + '</b><br>' + html;
+			function createMarker(latlng, label) {
+			    var contentString = '<b>' + label + '</b>';
 			    var marker = new google.maps.Marker({
 			        position: latlng,
 			        map: map,
@@ -116,13 +116,14 @@
 			        waypoints: myWaypoints,
 			        travelMode: travelMode
 			    };
-			    createMarker(new google.maps.LatLng(start), "Starting Point", "");
-			    createMarker(new google.maps.LatLng(end), "Target Point", "");
+			    createMarker(new google.maps.LatLng(start), "Starting Point");
+			    createMarker(new google.maps.LatLng(end), "Target Point");
 			    calcRoute(request, false)
 			}
 
 
 			function calcRoute(request, redirect) {
+				console.log("Calculating Routes");
 			    if (timerHandle) {
 			        clearTimeout(timerHandle);
 			    }
@@ -167,11 +168,7 @@
 			                        startLocation.latlng = legs[i].start_location;
 			                        startLocation.address = legs[i].start_address;
 			                    }
-			                    if (!redirect) {
-			                        marker = createMarkerWithImage(legs[i].start_location, "start", legs[i].start_address, "static/jan-64.png");
-			                    } else {
-			                        marker = createMarkerWithImage(marker.position, "start", "", "static/jan-64.png");
-			                    }
+			                    marker = createMarkerWithImage(startLocation.latlng, "user1", "static/jan-64.png");
 			                }
 			                endLocation.latlng = legs[i].end_location;
 			                endLocation.address = legs[i].end_address;
@@ -226,12 +223,12 @@
 			            redirectingDisplay.setDirections(response)
 			        }
 			    })
-			    requestMarkers.push(createMarkerWithImage(new google.maps.LatLng({{ waypoints }}[0][0], {{ waypoints }}[0][1]), "user2", "TODO", "static/robert-64.png"));
+			    requestMarkers.push(createMarkerWithImage(new google.maps.LatLng({{ waypoints }}[0][0], {{ waypoints }}[0][1]), "user2", "static/robert-64.png"));
 			}
 
 			function acceptRequest() {
 			    var waypoints = [];
-			    {% for point in waypoints %	}
+			    {% for point in waypoints %}
 			    var mypoint = {{ point }};
 			    waypoints.push({ location: new google.maps.LatLng(mypoint[0], mypoint[1])}); 
 			    {% endfor %}
