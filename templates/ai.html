@@ -29,8 +29,7 @@
 			var panoClient;
 			var nextPanoId;
 			var timerHandle = null;
-			var start = {lat: {{ start_lat }}, lng: {{ start_lng }}};
-			var end = {lat: {{ end_lat }}, lng: {{ end_lng }}};
+			var central = new google.maps.LatLng({lat: {{ central_lat }}, lng: {{ central_lng }}});
 			var travelMode = google.maps.DirectionsTravelMode.DRIVING;
 
 			function createMarkerWithImage(latlng, label, img) {
@@ -56,7 +55,8 @@
 			        position: latlng,
 			        map: map,
 			        title: label,
-			        zIndex: Math.round(latlng.lat() * -100000) << 5,
+			        icon: "static/caricon.png",
+			        zIndex: Math.round(latlng.lat() * -100000) << 5
 			    });
 
 			    google.maps.event.addListener(marker, 'click', function() {
@@ -121,6 +121,17 @@
 			    calcRoute(request, false)
 			}
 
+			function initCars() {
+				console.log("initiating cars");
+				var carCount = Math.round(Math.random() * 10);
+				console.log(carCount);
+				for (var i = 0; i < carCount; i++){
+					var factorLat = Math.min(Math.random() + 0.5, 0.98)/20;
+					var factorLng = Math.min(Math.random() + 0.5, 0.98)/20;
+					var startingLocation = new google.maps.LatLng(central.lat() + factorLat, central.lng() + factorLng); 
+					createMarker(startingLocation, "carNum: " + i);
+				}
+			}
 
 			function calcRoute(request, redirect) {
 				console.log("Calculating Routes");
@@ -194,6 +205,7 @@
 			var requestMarkers = [];
 			var movingMarkers = [];
 
+/*
 			function receiveRequest() {
 			    var waypoints = []
 			    waypoints.push({location: marker.position}); 
@@ -240,9 +252,9 @@
 			    };
 			    calcRoute(redirectRequest, true)
 			}
-
-			var step = 50;
-			var tick = 10;
+*/
+			var step = 30;
+			var tick = 100;
 			var eol;
 			var k = 0;
 			var stepnum = 0;
@@ -269,8 +281,7 @@
 			function equals(latLng1, latLng2) {
 			    var distance = (latLng1.lat() - latLng2.lat()) * (latLng1.lat() - latLng2.lat()) + (latLng1.lng() - latLng2.lng()) * (latLng1.lng() - latLng2.lng());
 			    distance = Math.sqrt(distance);
-			    console.log(distance);
-			    if (distance < 0.01) {
+			    if (distance < 0.0001) {
 			        return true;
 			    }
 			    return false;
@@ -316,9 +327,7 @@
 
 		</script>
 	</head>
-	<body onload="initMap(); initRequest();">
-		<button type="button" onclick="receiveRequest()">Click Me!</button> 
-		<button type="button" onclick="acceptRequest()">Click Me!</button> 
+	<body onload="initMap(); initCars();">
 		<div id="map_canvas" style="width:100%;height:90%;"></div>
 	</body>
 </html>

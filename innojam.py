@@ -30,5 +30,10 @@ def map_view():
     waypoints = [[52.3161997,10.163072], [52.3818199,10.6183886]]
     return render_template("map_view.html", start_lat=start["lat"], start_lng=start["lng"], end_lat=end["lat"], end_lng=end["lng"], waypoints=waypoints)
 
+@app.route('/ai')
+def ai():
+    central =  {"lat": 52.3795836, "lng": 9.6213878}
+    return render_template("ai.html", central_lat = central["lat"], central_lng = central["lng"])
+
 if __name__ == '__main__':
     app.run()
