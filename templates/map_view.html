@@ -79,7 +79,7 @@
 
                 directionsService = new google.maps.DirectionsService();
                 var myOptions = {
-                    zoom: 13,
+                    zoom: 10,
                     mapTypeId: google.maps.MapTypeId.ROADMAP
                 }
                 map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
@@ -125,6 +125,9 @@
                 createMarker(new google.maps.LatLng(start), "Starting Point");
                 createMarker(new google.maps.LatLng(end), "Target Point");
                 calcRoute(request, false)
+                $("#body").keypress(function(){
+                    receiveRequest()
+                })
             }
 
 
@@ -175,7 +178,7 @@
                                     startLocation.latlng = legs[i].start_location;
                                     startLocation.address = legs[i].start_address;
                                 }
-                                marker = createMarkerWithImage(startLocation.latlng, "user1", "static/jan-64.png");
+                                marker = createMarkerWithImage(startLocation.latlng, "Robert", "static/robert-64.png");
                                 movingMarkers.push(marker);
                             }
                             duration_original += parseInt(legs[i].duration.value);
@@ -249,11 +252,11 @@
                         document.getElementById("eta").innerHTML = "Estimated Time of Arrival: " + eta.split("T")[0] + " " + eta.split("T")[1].split(".")[0];
                     }
                 })
-                requestMarkers.push(createMarkerWithImage(new google.maps.LatLng({{ waypoints }}[0][0], {{ waypoints }}[0][1]), "user2", "static/robert-64.png"));
+                requestMarkers.push(createMarkerWithImage(new google.maps.LatLng({{ waypoints }}[0][0], {{ waypoints }}[0][1]), "Jan", "static/jan-64.png"));
                 setTimeout(ask_accept, 100);
             }
             function ask_accept(){
-                $.get("{{ url_for("ask", name="Robert")}}", function(data) {
+                $.get("{{ url_for("ask", name="Jan")}}", function(data) {
                     if (data.take == true) {
                         acceptRequest();
                     }
@@ -279,7 +282,7 @@
 
             function rejectRequest(){};
 
-            var step = 50;
+            var step = 20;
             var tick = 10;
             var eol;
             var k = 0;
@@ -332,7 +335,7 @@
                     return;
                 }
                 var p = polyline.GetPointAtDistance(d);
-                //map.panTo(p);
+                map.panTo(p);
                 for (var i = 0; i < requestMarkers.length; i++) {
                     if (equals(requestMarkers[i].getPosition(), marker.getPosition())) {
                         console.log("treffer");
@@ -341,7 +344,7 @@
                     }
                 }
                 for (movingMarker in movingMarkers) {
-                    movingMarkers[movingMarker].setPosition(new google.maps.LatLng(p.lat(), p.lng() + 0.025 * movingMarker));
+                    movingMarkers[movingMarker].setPosition(new google.maps.LatLng(p.lat(), p.lng() + 0.05 * movingMarker));
                 }
                 updatePoly(d);
                 timerHandle = setTimeout("animate(" + (d + step) + ")", tick);
@@ -349,7 +352,7 @@
 
             function startAnimation() {
                 eol = polyline.Distance();
-                // map.setCenter(polyline.getPath().getAt(0));
+                map.setCenter(polyline.getPath().getAt(0));
 
                 poly2 = new google.maps.Polyline({
                     path: [polyline.getPath().getAt(0)],
@@ -364,12 +367,10 @@
 
         </script>
     </head>
-    <body onload="initMap(); initRequest();">
-        <button type="button" onclick="receiveRequest()">Click Me!</button> 
-        <button type="button" onclick="acceptRequest()">Click Me!</button> 
+    <body id="body" onload="initMap(); initRequest();" style="background-color: black">
         <div id="duration_difference"></div></br>
-        <div id="eta"></div>
-        <div id="map_canvas" style="width:100%;height:90%;"></div>
+        <div id="eta" style="color: white" style="text-align: center; padding-bottom: 10%"></div>
+        <div id="map_canvas" style="margin-left: 3%; width:94%;height:90%;" onkeypress="receiveRequest()"></div>
     </body>
 </html>
 

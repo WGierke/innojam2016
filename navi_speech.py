@@ -2,7 +2,7 @@ import speech_recognition as sr
 import os
 
 recognizer = sr.Recognizer()
-recognizer.energy_threshold = 2500
+recognizer.energy_threshold = 3100
 
 def say(s):
     os.system("say {} -v rachel".format(s))
