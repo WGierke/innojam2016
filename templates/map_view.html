@@ -173,7 +173,6 @@ function calcRoute(request, redirect) {
                     if (!redirect){
                     	marker = createMarkerWithImage(legs[i].start_location, "start", legs[i].start_address, "static/jan-64.png");
                 	} else {
-                		console.log(marker.position);
                 		marker = createMarkerWithImage(marker.position, "start", "", "static/jan-64.png");
                 	}
                 }
@@ -287,7 +286,10 @@ function animate(d) {
     var p = polyline.GetPointAtDistance(d);
     //map.panTo(p);
     for (var i = 0; i < requestMarkers.length; i++){
-    	if (requestMarkers[i].location == marker.location){
+    	if (requestMarkers[i].position == marker.position){
+    		console.log(requestMarkers[i].position);
+    		console.log(marker.position);
+    		console.log("Treffer");
     		movingMarkers.push(requestMarkers[i]);
     		requestMarkers.pop(i);
     	}
@@ -306,7 +308,7 @@ function animate(d) {
 function startAnimation() {
     eol = polyline.Distance();
     // map.setCenter(polyline.getPath().getAt(0));
-    
+
     poly2 = new google.maps.Polyline({
         path: [polyline.getPath().getAt(0)],
         strokeColor: "#0000FF",
