@@ -154,6 +154,7 @@
                         directionsDisplay.setDirections(response);
                         var bounds = new google.maps.LatLngBounds();
                         var route = response.routes[0];
+                        movingMarkers = [];
                         startLocation = new Object();
                         endLocation = new Object();
 
@@ -169,6 +170,7 @@
                                     startLocation.address = legs[i].start_address;
                                 }
                                 marker = createMarkerWithImage(startLocation.latlng, "user1", "static/jan-64.png");
+                                movingMarkers.push(marker);
                             }
                             endLocation.latlng = legs[i].end_location;
                             endLocation.address = legs[i].end_address;
@@ -266,20 +268,31 @@
                 }
             }
 
+            var counter = 0;
+            var distance_last = 0;
+
             function equals(latLng1, latLng2) {
-                var distance = (latLng1.lat() - latLng2.lat()) * (latLng1.lat() - latLng2.lat()) + (latLng1.lng() - latLng2.lng()) * (latLng1.lng() - latLng2.lng());
-                distance = Math.sqrt(distance);
-                console.log(distance);
-                if (distance < 0.01) {
-                    return true;
+                if(!(distance_last > 0.1) || !(counter < 10)){  // called way too often so we restrict the computing
+                    console.log("into")
+                    counter = 0;
+                    var distance = (latLng1.lat() - latLng2.lat()) * (latLng1.lat() - latLng2.lat()) + (latLng1.lng() - latLng2.lng()) * (latLng1.lng() - latLng2.lng());
+                    distance = Math.sqrt(distance);
+                    distance_last = distance;
+                    if (distance < 0.01) {
+                        return true;
+                    }
                 }
+                counter++;
                 return false;
             }
 
             function animate(d) {
                 if (d > eol) {
                     map.panTo(endLocation.latlng);
-                    marker.setPosition(endLocation.latlng);
+                    for (movingMarker in movingMarkers) {
+                        movingMarkers[movingMarker].setPosition(endLocation.latlng);
+                        movingMarkers[movingMarker].setMap(null);
+                    }
                     return;
                 }
                 var p = polyline.GetPointAtDistance(d);
@@ -292,9 +305,8 @@
                     }
                 }
                 for (movingMarker in movingMarkers) {
-                    movingMarkers[movingMarker].setPosition(p);
+                    movingMarkers[movingMarker].setPosition(new google.maps.LatLng(p.lat(), p.lng() + 0.025 * movingMarker));
                 }
-                marker.setPosition(p);
                 updatePoly(d);
                 timerHandle = setTimeout("animate(" + (d + step) + ")", tick);
             }
