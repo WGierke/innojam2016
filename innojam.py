@@ -9,6 +9,7 @@ from navi_speech import ask_take
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
+app.config["DEMO"] = False
 
 admin = Admin(app, template_mode='bootstrap3')
 admin.add_view(ModelView(Location, db_session))
@@ -38,14 +39,15 @@ def app_view():
 
 @app.route('/map')
 def map_view():
-    start = {"lat": 52.3795836, "lng": 9.6213878}
-    end = {"lat": 52.41, "lng": 10.6368185}
-    waypoints = [[52.4207803,9.696139]]
+    start = {"lat": 52.321039, "lng": 9.808329}
+    end = {"lat": 52.359863, "lng": 9.731651}
+
+    waypoints = [[52.362903, 9.759631]]
     return render_template("map_view.html", start_lat=start["lat"], start_lng=start["lng"], end_lat=end["lat"], end_lng=end["lng"], waypoints=waypoints)
 
 @app.route('/ask/take/<name>')
 def ask(name):
-    if ask_take(name):
+    if ask_take(name, app.config["DEMO"]):
         return jsonify(take=True)
     else:
         return jsonify(take=False)

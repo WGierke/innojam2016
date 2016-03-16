@@ -2,14 +2,15 @@ import speech_recognition as sr
 import os
 
 recognizer = sr.Recognizer()
+recognizer.energy_threshold = 2500
 
 def say(s):
     os.system("say {} -v rachel".format(s))
 
-def ask_take(name):
-    say("{} is traveling to a location on your route. Do you want to take him".format(name))
-    if said_yes():
-        say("Great, please pick him up")
+def ask_take(name, demo=False):
+    say("{} is traveling to a location on your route. Do you want to pick {} up".format(name, name))
+    if said_yes(demo=demo) or demo:
+        say("Great, please follow the new route and pick him up")
         return True
     else:
         say("Ok, have a nice trip")
@@ -20,12 +21,14 @@ def get_audio():
         audio = recognizer.listen(source)
     return audio
 
-def said_yes(tried=0):
+def said_yes(tried=0, demo=False):
     try:
         return ("yes" in recognizer.recognize_google(get_audio()))
     except:
-        if tried < 2:
-            say("I could not understand you. Do you want to take him?")
+        if tried < 2 and not demo:
+            say("I could not understand you. Please repeat.")
             return said_yes(tried+1)
+        else:
+            return True
         return False
 

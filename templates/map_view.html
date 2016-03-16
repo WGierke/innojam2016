@@ -43,7 +43,7 @@ function createMarkerWithImage(latlng, label, html, img) {
         map: map,
         title: label,
         zIndex: Math.round(latlng.lat() * -100000) << 5,
-        icon: img,
+        icon: img
     });
 
     google.maps.event.addListener(marker, 'click', function() {
@@ -58,7 +58,7 @@ function createMarker(latlng, label, html) {
     var marker = new google.maps.Marker({
         position: latlng,
         map: map,
-        title: label,
+        title: label
         //zIndex: Math.round(latlng.lat() * -100000) << 5,
     });
 
@@ -234,7 +234,11 @@ redirectionsService = new google.maps.DirectionsService();
       redirectingDisplay.setDirections(response)
     }
   })
-  requestMarkers.push(createMarkerWithImage(new google.maps.LatLng({{waypoints}}[0][0], {{waypoints}}[0][1]), "user2", "TODO", "static/robert-64.png"));
+    requestMarkers.push(createMarkerWithImage(new google.maps.LatLng({{waypoints}}[0][0], {{waypoints}}[0][1]), "user2", "TODO", "static/robert-64.png"));
+    setTimeout(ask_accept, 100);
+}
+
+function ask_accept(){
     $.get("{{ url_for("ask", name="Robert")}}", function(data) {
         if (data.take == true) {
             acceptRequest();
