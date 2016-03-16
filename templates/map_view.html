@@ -33,16 +33,31 @@ var start = {lat: {{start_lat}}, lng: {{start_lng}}};
 var end = {lat: {{end_lat}}, lng: {{end_lng}}};
 var travelMode = google.maps.DirectionsTravelMode.DRIVING;
 
-function createMarker(latlng, label, html) {
+function createMarkerWithImage(latlng, label, html, img) {
     var contentString = '<b>' + label + '</b><br>' + html;
     var marker = new google.maps.Marker({
         position: latlng,
         map: map,
         title: label,
         zIndex: Math.round(latlng.lat() * -100000) << 5,
-        icon: 'static/jan-64.png',
+        icon: img,
     });
-    marker.myname = label;
+
+    google.maps.event.addListener(marker, 'click', function() {
+        infowindow.setContent(contentString);
+        infowindow.open(map, marker);
+    });
+    return marker;
+}
+
+function createMarker(latlng, label, html) {
+    var contentString = '<b>' + label + '</b><br>' + html;
+    var marker = new google.maps.Marker({
+        position: latlng,
+        map: map,
+        title: label,
+        //zIndex: Math.round(latlng.lat() * -100000) << 5,
+    });
 
     google.maps.event.addListener(marker, 'click', function() {
         infowindow.setContent(contentString);
@@ -104,6 +119,8 @@ function initRequest() {
         waypoints: myWaypoints,
         travelMode: travelMode
     };
+    createMarker(new google.maps.LatLng(start), "Starting Point", "");
+    createMarker(new google.maps.LatLng(end), "Target Point", "");
     calcRoute(request, false)
 }
 
@@ -128,21 +145,12 @@ function calcRoute(request, redirect) {
         strokeColor: '#FF0000',
         strokeWeight: 3
     });
-
-	if (redirect){
-	    var rendererOptions = {
-	    	suppressMarkers: true,
-	        map: map
-	    }
-	} else {
-		var rendererOptions = {
-	        map: map
-	    }
-
+	var rendererOptions = {
+  		suppressMarkers: true,
+    	map: map
 	}
-	if(directionsDisplay == null){
     directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
-}
+
     directionsService.route(request, function(response, status) {
         if (status == google.maps.DirectionsStatus.OK) {
             directionsDisplay.setDirections(response);
@@ -162,7 +170,12 @@ function calcRoute(request, redirect) {
                     	startLocation.latlng = legs[i].start_location;
                     	startLocation.address = legs[i].start_address;
                     }
-                    marker = createMarker(legs[i].start_location, "start", legs[i].start_address, "green");
+                    if (!redirect){
+                    	marker = createMarkerWithImage(legs[i].start_location, "start", legs[i].start_address, "static/jan-64.png");
+                	} else {
+                		console.log(marker.position);
+                		marker = createMarkerWithImage(marker.position, "start", "", "static/jan-64.png");
+                	}
                 }
                 endLocation.latlng = legs[i].end_location;
                 endLocation.address = legs[i].end_address;
@@ -200,14 +213,12 @@ function receiveRequest(){
 		});
   {% endfor %}
   if (redirectingDisplay == null){
-  	console.log("new display");
 redirectingDisplay = new google.maps.DirectionsRenderer({
   	suppressMarkers: true,
     map: map
   })
 }
 if (redirectionsService == null){
-	 	console.log("new service");
 redirectionsService = new google.maps.DirectionsService();
 }
   var rideSharingRequest = {
@@ -221,14 +232,11 @@ redirectionsService = new google.maps.DirectionsService();
       redirectingDisplay.setDirections(response)
     }
   })
-  requestMarkers.push(createMarker(new google.maps.LatLng({{waypoints}}[0][0], {{waypoints}}[0][1]), "user2", "TODO", "blue"));
+  requestMarkers.push(createMarkerWithImage(new google.maps.LatLng({{waypoints}}[0][0], {{waypoints}}[0][1]), "user2", "TODO", "static/robert-64.png"));
 }
 
 function acceptRequest(){
   var waypoints = []
-  	waypoints.push({
-       location: marker.position
-	});
   {% for point in waypoints%}
   		var mypoint = {{point}};
 		waypoints.push({
@@ -236,7 +244,7 @@ function acceptRequest(){
 		});
   {% endfor %}
     var redirectRequest = {
-        origin: start,
+        origin: marker.position,
         destination: end,
         waypoints: waypoints,
         travelMode: travelMode
@@ -288,7 +296,7 @@ function animate(d) {
     	// TODO
     	// show multiple markers
     	// side by side
-    	movingMarker.setPosition(p);
+    	// movingMarker.setPosition(p);
     }
     marker.setPosition(p);
     updatePoly(d);
@@ -298,10 +306,7 @@ function animate(d) {
 function startAnimation() {
     eol = polyline.Distance();
     // map.setCenter(polyline.getPath().getAt(0));
-
-
-
-
+    
     poly2 = new google.maps.Polyline({
         path: [polyline.getPath().getAt(0)],
         strokeColor: "#0000FF",
