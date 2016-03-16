@@ -1,0 +1,57 @@
+{
+	"Locations": [{
+		"Street": "Stahnsdorfer Str.",
+		"City": "14482 Potsdam",
+		"Lat": 52.3941056,
+		"Long": 13.1322587
+	}, {
+		"Street": "Potsdamer Platz",
+		"City": "10785 Berlin",
+		"Lat": 52.509652,
+		"Long": 13.3737554
+	}],
+	"Tours": [{
+		"Type": "Carpooling",
+		"Driver": {
+			"Name": "Peter",
+			"Picture": "/webapp/model/images/jan-64.png",
+			"Car": "VW Polo"
+		},
+		"Price": "20,00",
+		"TimeUntilArrival": 5,
+		"Duration": 1.7
+	}, {
+		"Type": "Carpooling",
+		"Driver": {
+			"Name": "Robert",
+			"Picture": "/webapp/model/images/robert-64.png",
+			"Car": "VW Turan"
+		},
+		"Price": "25,00",
+		"TimeUntilArrival": 9,
+		"Duration": 1.9
+	}, {
+		"Type": "Public Transport",
+		"Driver": {
+			"Name": "Deutsche Bahn",
+			"Picture": "sap-icon://passenger-train",
+			"Car": "ICE 74, ICE 941"
+		},
+		"Price": "71,00",
+		"TimeUntilArrival": 7,
+		"Duration": 2.6
+	}, {
+		"Type": "Public Transport",
+		"Driver": {
+			"Name": "Regio Express",
+			"Picture": "sap-icon://subway-train",
+			"Car": "IC 2049, RE 18125, S7"
+		},
+		"Price": "39,00",
+		"TimeUntilArrival": 30,
+		"Duration": 3.5
+	}],
+	"sourceLocation": "",
+	"destinationLocation": "",
+	"startDateTime": ""
+}
