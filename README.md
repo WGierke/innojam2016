@@ -1,17 +1,22 @@
-# innojam2016
+# JoinMyRide
 
-What are your personal ideas for innovation around car production, driver experience mobility of the future?
+"What are your personal ideas for innovation around car production, driver experience mobility of the future?"  
+
+We think that there will be a fleet of autonomous cars transporting users in the future, having a big comparative advantage over public transport.
 
 Necessary dependencies:
+- Server:
+    SQLAlchemy in Flask
+    `pip install flask-sqlalchemy`
+    
+    Flask-admin
+    `pip install flask-admin`
+    
+    Sqlalchemy-Hana
+    `pip install sqlalchemy-hana`
+    
+    PyAudio
+    `pip install pyaudio`
 
-SQLAlchemy in Flask
-`pip install flask-sqlalchemy`
-
-Flask-admin
-`pip install flask-admin`
-
-Sqlalchemy-Hana
-`pip install sqlalchemy-hana`
-
-PyAudio
-`pip install pyaudio`
+- App:  
+    should run on HANA Cloud Platform
