@@ -25,7 +25,7 @@
 		"Driver": {
 			"Name": "Robert",
 			"Picture": "/webapp/model/images/robert-64.png",
-			"Car": "VW Turan"
+			"Car": "VW Tiguan"
 		},
 		"Price": "25,00",
 		"TimeUntilArrival": 9,
