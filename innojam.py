@@ -27,7 +27,7 @@ def app_view():
 def map_view():
     start = {"lat": 52.3795836, "lng": 9.6213878}
     end = {"lat": 52.41, "lng": 10.6368185}
-    waypoints = [[52.4207803,9.696139]]
+    waypoints = [[52.3161997,10.163072]]
     return render_template("map_view.html", start_lat=start["lat"], start_lng=start["lng"], end_lat=end["lat"], end_lng=end["lng"], waypoints=waypoints)
 
 if __name__ == '__main__':
