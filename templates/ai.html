@@ -25,6 +25,8 @@
 			    wait = 1;
 			var infowindow = null;
 
+            var cars = [];
+
 			var myPano;
 			var panoClient;
 			var nextPanoId;
@@ -77,7 +79,7 @@
 			        mapTypeId: google.maps.MapTypeId.ROADMAP
 			    }
 			    map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-			    address = 'Hannover'
+			    address = 'Pariser Platz, 10117 Berlin'
 			    geocoder = new google.maps.Geocoder();
 			    geocoder.geocode({
 			        'address': address
@@ -122,15 +124,27 @@
 			}
 
 			function initCars() {
-				console.log("initiating cars");
-				var carCount = Math.round(Math.random() * 10);
-				console.log(carCount);
-				for (var i = 0; i < carCount; i++){
-					var factorLat = Math.min(Math.random() + 0.5, 0.98)/20;
-					var factorLng = Math.min(Math.random() + 0.5, 0.98)/20;
-					var startingLocation = new google.maps.LatLng(central.lat() + factorLat, central.lng() + factorLng); 
-					createMarker(startingLocation, "carNum: " + i);
-				}
+				cars.push([52.525268, 13.408185, 52.541114, 13.375566])
+				cars.push([52.528025, 13.378762, 52.540859, 13.268106])
+				cars.push([52.516175, 13.256263, 52.517022, 13.384957])
+				cars.push([52.554894, 13.418675, 52.500893, 13.392038])
+				cars.push([52.491425, 13.382983, 52.512743, 13.705070])
+                //console.log("initiating cars");
+               var i = 1
+               for (var car in cars){
+                   var startingLocation = new google.maps.LatLng(cars[car][0], cars[car][1])
+                   createMarker(startingLocation, "carNum: " + i);
+                   i++;
+               }
+{#				console.log("initiating cars");#}
+{#				var carCount = Math.round(Math.random() * 10);#}
+{#				console.log(carCount);#}
+{#				for (var i = 0; i < carCount; i++){#}
+{#					var factorLat = Math.min(Math.random() + 0.5, 0.98)/20;#}
+{#					var factorLng = Math.min(Math.random() + 0.5, 0.98)/20;#}
+{#					var startingLocation = new google.maps.LatLng(central.lat() + factorLat, central.lng() + factorLng); #}
+{#					createMarker(startingLocation, "carNum: " + i);#}
+{#				}#}
 			}
 
 			function calcRoute(request, redirect) {
