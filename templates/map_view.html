@@ -270,7 +270,7 @@
                 var distance = (latLng1.lat() - latLng2.lat()) * (latLng1.lat() - latLng2.lat()) + (latLng1.lng() - latLng2.lng()) * (latLng1.lng() - latLng2.lng());
                 distance = Math.sqrt(distance);
                 console.log(distance);
-                if (distance < 0.001) {
+                if (distance < 0.01) {
                     return true;
                 }
                 return false;
