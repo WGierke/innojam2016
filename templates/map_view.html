@@ -29,6 +29,9 @@ var myPano;
 var panoClient;
 var nextPanoId;
 var timerHandle = null;
+var start = {lat: {{start_lat}}, lng: {{start_lng}}};
+var end = {lat: {{end_lat}}, lng: {{end_lng}}};
+var travelMode = google.maps.DirectionsTravelMode.DRIVING;
 
 function createMarker(latlng, label, html) {
     var contentString = '<b>' + label + '</b><br>' + html;
@@ -48,7 +51,7 @@ function createMarker(latlng, label, html) {
     return marker;
 }
 
-function initialize() {
+function initMap() {
     infowindow = new google.maps.InfoWindow({
         size: new google.maps.Size(150, 50)
     });
@@ -61,7 +64,7 @@ function initialize() {
         mapTypeId: google.maps.MapTypeId.ROADMAP
     }
     map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-    address = 'new york'
+    address = 'Hannover'
     geocoder = new google.maps.Geocoder();
     geocoder.geocode({
         'address': address
@@ -92,7 +95,20 @@ function initialize() {
 
 var steps = []
 
-function calcRoute() {
+function initRequest() {
+    var myWaypoints = [];
+    //waypoints.add(new google.maps.LatLng(marker.position));
+    var request = {
+        origin: start,
+        destination: end,
+        waypoints: myWaypoints,
+        travelMode: travelMode
+    };
+    calcRoute(request, false)
+}
+
+
+function calcRoute(request, redirect) {
     if (timerHandle) {
         clearTimeout(timerHandle);
     }
@@ -113,27 +129,20 @@ function calcRoute() {
         strokeWeight: 3
     });
 
-    var rendererOptions = {
-        map: map
-    }
-    directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
-    var travelMode = google.maps.DirectionsTravelMode.DRIVING
-    var waypoints = []
-    /*
-    false position
-    var waypoints = []
-    {% for point in waypoints%}
-      waypoints.add(new google.maps.LatLng(point))
-    {% endfor %}
-    waypoints.add(new google.maps.LatLng(marker.position));
-    */
-    var request = {
-        origin: {lat: {{start_lat}}, lng: {{start_lng}}},
-        destination: {lat: {{end_lat}}, lng: {{end_lng}}},
-        waypoints: [],
-        travelMode: travelMode
-    };
+	if (redirect){
+	    var rendererOptions = {
+	    	suppressMarkers: true,
+	        map: map
+	    }
+	} else {
+		var rendererOptions = {
+	        map: map
+	    }
 
+	}
+	if(directionsDisplay == null){
+    directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+}
     directionsService.route(request, function(response, status) {
         if (status == google.maps.DirectionsStatus.OK) {
             directionsDisplay.setDirections(response);
@@ -146,9 +155,13 @@ function calcRoute() {
             var legs = response.routes[0].legs;
             for (i = 0; i < legs.length; i++) {
                 if (i == 0) {
-                    startLocation.latlng = legs[i].start_location;
-                    startLocation.address = legs[i].start_address;
-
+                	if(redirect){
+                		startLocation.latlng = marker.position;
+                    	startLocation.address = legs[i].start_address;
+                	} else {
+                    	startLocation.latlng = legs[i].start_location;
+                    	startLocation.address = legs[i].start_address;
+                    }
                     marker = createMarker(legs[i].start_location, "start", legs[i].start_address, "green");
                 }
                 endLocation.latlng = legs[i].end_location;
@@ -164,45 +177,71 @@ function calcRoute() {
                 }
             }
             polyline.setMap(map);
-            map.fitBounds(bounds);
-            map.setZoom(18);
+            // map.fitBounds(bounds);
+            // map.setZoom(18);
             startAnimation();
         }
     });
 }
+var redirectionsService;
+var redirectingDisplay;
+var requestMarkers = [];
+var movingMarkers = [];
 
 function receiveRequest(){
-  var redirectingDisplay = new google.maps.DirectionsRenderer({
+  var waypoints = []
+  	waypoints.push({
+       location: marker.position
+	});
+  {% for point in waypoints%}
+  		var mypoint = {{point}};
+		waypoints.push({
+        	location: new google.maps.LatLng(mypoint[0],mypoint[1])
+		});
+  {% endfor %}
+  if (redirectingDisplay == null){
+  	console.log("new display");
+redirectingDisplay = new google.maps.DirectionsRenderer({
+  	suppressMarkers: true,
     map: map
   })
-  var waypoints = []
-  {% for point in waypoints%}
-    waypoints.add(new google.maps.LatLng(point))
-  {% endfor %}
-  waypoints.add(new google.maps.LatLng(marker.position));
-  /*
+}
+if (redirectionsService == null){
+	 	console.log("new service");
+redirectionsService = new google.maps.DirectionsService();
+}
   var rideSharingRequest = {
-    origin: {lat: {{start_lat}}, lng: {{start_lng}}},
-    destination: {lat: {{end_lat}}, lng: {{end_lng}}},
-    waypoints: waypoints
+    origin: start,
+    destination: end,
+    waypoints: waypoints,
+    travelMode: travelMode
   }
-  */
-  var rideSharingRequest = {
-    origin: {lat: {{start_lat}}, lng: {{start_lng}}},
-    destination: {lat: {{end_lat}}, lng: {{end_lng}}},
-    waypoints: waypoints
-  }
-  var redirectionsService = new google.maps.DirectionsService();
   redirectionsService.route(rideSharingRequest, function(response, status){
     if (status == google.maps.DirectionsStatus.OK){
       redirectingDisplay.setDirections(response)
     }
   })
-  
+  requestMarkers.push(createMarker(new google.maps.LatLng({{waypoints}}[0][0], {{waypoints}}[0][1]), "user2", "TODO", "blue"));
 }
 
 function acceptRequest(){
-  
+  var waypoints = []
+  	waypoints.push({
+       location: marker.position
+	});
+  {% for point in waypoints%}
+  		var mypoint = {{point}};
+		waypoints.push({
+        	location: new google.maps.LatLng(mypoint[0],mypoint[1])
+		});
+  {% endfor %}
+    var redirectRequest = {
+        origin: start,
+        destination: end,
+        waypoints: waypoints,
+        travelMode: travelMode
+    };
+  calcRoute(redirectRequest, true)
 }
 
 
@@ -238,7 +277,19 @@ function animate(d) {
         return;
     }
     var p = polyline.GetPointAtDistance(d);
-    map.panTo(p);
+    //map.panTo(p);
+    for (var i = 0; i < requestMarkers.length; i++){
+    	if (requestMarkers[i].location == marker.location){
+    		movingMarkers.push(requestMarkers[i]);
+    		requestMarkers.pop(i);
+    	}
+    }
+    for (movingMarker in movingMarkers){
+    	// TODO
+    	// show multiple markers
+    	// side by side
+    	movingMarker.setPosition(p);
+    }
     marker.setPosition(p);
     updatePoly(d);
     timerHandle = setTimeout("animate(" + (d + step) + ")", tick);
@@ -246,7 +297,7 @@ function animate(d) {
 
 function startAnimation() {
     eol = polyline.Distance();
-    map.setCenter(polyline.getPath().getAt(0));
+    // map.setCenter(polyline.getPath().getAt(0));
 
 
 
@@ -264,7 +315,12 @@ function startAnimation() {
 
 </script>
 </head>
-<body onload="initialize(); calcRoute();">
-<div id="map_canvas" style="width:100%;height:100%;"></div>
+<body onload="initMap(); initRequest();">
+<button type="button" onclick="receiveRequest()">Click Me!</button> 
+<button type="button" onclick="acceptRequest()">Click Me!</button> 
+<div id="map_canvas" style="width:100%;height:90%;">
+</div>
 </body>
 </html>
+
+<!--waypoints.location = waypoints.location + (new google.maps.LatLng({{point}}))-->
