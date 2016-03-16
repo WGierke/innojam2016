@@ -8,6 +8,12 @@ def say(s):
 
 def ask_take(name):
     say("{} is traveling to a location on your route. Do you want to take him".format(name))
+    if said_yes():
+        say("Great, please pick him up")
+        return True
+    else:
+        say("Ok, have a nice trip")
+        return False
 
 def get_audio():
     with sr.Microphone() as source:
@@ -23,8 +29,3 @@ def said_yes(tried=0):
             return said_yes(tried+1)
         return False
 
-ask_take("willi")
-if said_yes():
-    say("Great, please pick him up")
-else:
-    say("Ok, have a nice trip")

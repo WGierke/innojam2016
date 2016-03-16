@@ -1,10 +1,11 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 import pyhdb
 import json
 from database import db_session
 from models import *
+from navi_speech import ask_take
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
@@ -41,6 +42,14 @@ def map_view():
     end = {"lat": 52.41, "lng": 10.6368185}
     waypoints = [[52.4207803,9.696139]]
     return render_template("map_view.html", start_lat=start["lat"], start_lng=start["lng"], end_lat=end["lat"], end_lng=end["lng"], waypoints=waypoints)
+
+@app.route('/ask/take/<name>')
+def ask(name):
+    if ask_take(name):
+        return jsonify(take=True)
+    else:
+        return jsonify(take=False)
+
 
 if __name__ == '__main__':
     app.run()
