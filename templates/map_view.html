@@ -24,6 +24,8 @@
             var speed = 0.000005,
                 wait = 1;
             var infowindow = null;
+            var duration_original = 0;
+            var duration_redirected;
 
             var myPano;
             var panoClient;
@@ -170,6 +172,7 @@
                                 }
                                 marker = createMarkerWithImage(startLocation.latlng, "user1", "static/jan-64.png");
                             }
+                            duration_original += parseInt(legs[i].duration.value);
                             endLocation.latlng = legs[i].end_location;
                             endLocation.address = legs[i].end_address;
                             var steps = legs[i].steps;
@@ -221,6 +224,13 @@
                 redirectionsService.route(rideSharingRequest, function(response, status) {
                     if (status == google.maps.DirectionsStatus.OK) {
                         redirectingDisplay.setDirections(response)
+                        duration_redirected = 0;
+                        for(var i = 0; i < response.routes[0].legs.length; i++) {
+                          duration_redirected += parseInt(response.routes[0].legs[i].duration.value);
+                        }
+                        console.log("redirect: " + duration_redirected);
+                        var time_difference = duration_redirected- duration_original;
+                        document.getElementById("duration_difference").innerHTML = "Travel Time Difference: " + Math.ceil(time_difference/60) + " minutes";
                     }
                 })
                 requestMarkers.push(createMarkerWithImage(new google.maps.LatLng({{ waypoints }}[0][0], {{ waypoints }}[0][1]), "user2", "static/robert-64.png"));
@@ -319,6 +329,7 @@
     <body onload="initMap(); initRequest();">
         <button type="button" onclick="receiveRequest()">Click Me!</button> 
         <button type="button" onclick="acceptRequest()">Click Me!</button> 
+        <div id="duration_difference"></div>
         <div id="map_canvas" style="width:100%;height:90%;"></div>
     </body>
 </html>
