@@ -13,8 +13,6 @@
 		<script type ="text/javascript" src="static/v3_epoly.js"></script>
 		<script type="text/javascript"> 
 			var map;
-			var directionDisplay;
-			var directionsService;
 			var stepDisplay;
 			var markerArray = [];
 			var position;
@@ -26,6 +24,7 @@
 			var infowindow = null;
 
             var cars = [];
+            var stopped_cars = [];
 
 			var myPano;
 			var panoClient;
@@ -41,7 +40,7 @@
 			            map: map,
 			            title: label,
 			            zIndex: Math.round(latlng.lat() * -100000) << 5,
-			            icon: img,
+			            icon: img
 			        });
 
 			        google.maps.event.addListener(marker, 'click', function() {
@@ -73,7 +72,6 @@
 			        size: new google.maps.Size(150, 50)
 			    });
 
-			    directionsService = new google.maps.DirectionsService();
 			    var myOptions = {
 			        zoom: 13,
 			        mapTypeId: google.maps.MapTypeId.ROADMAP
@@ -88,23 +86,7 @@
 			    });
 
 
-			    var rendererOptions = {
-			        map: map
-			    }
-			    directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
-
-
 			    stepDisplay = new google.maps.InfoWindow();
-			    polyline = new google.maps.Polyline({
-			        path: [],
-			        strokeColor: '#FF0000',
-			        strokeWeight: 3
-			    });
-			    poly2 = new google.maps.Polyline({
-			        path: [],
-			        strokeColor: '#FF0000',
-			        strokeWeight: 3
-			    });
 			}
 
 
@@ -129,11 +111,34 @@
 				cars.push([52.516175, 13.256263, 52.517022, 13.384957])
 				cars.push([52.554894, 13.418675, 52.500893, 13.392038])
 				cars.push([52.491425, 13.382983, 52.512743, 13.705070])
+                cars.push([52.534501, 13.378048, 52.507316, 13.442832])
+                cars.push([52.537061, 13.481594, 52.507316, 13.442832])
                 //console.log("initiating cars");
                var i = 1
                for (var car in cars){
                    var startingLocation = new google.maps.LatLng(cars[car][0], cars[car][1])
-                   createMarker(startingLocation, "carNum: " + i);
+                   marker = createMarker(startingLocation, "carNum: " + i);
+                   var request = {
+						origin: {"lat": cars[car][0], "lng": cars[car][1]},
+						destination: {"lat": cars[car][2], "lng": cars[car][3]},
+						waypoints: [],
+						travelMode: travelMode
+			        }
+					var polyline = new google.maps.Polyline({
+					path: [],
+					strokeColor: '#FF0000',
+					strokeWeight: 3
+					});
+
+					var poly2 = new google.maps.Polyline({
+					path: [],
+					strokeColor: '#FF0000',
+					strokeWeight: 3
+					});
+                   car_d = {"marker": marker, "p1": polyline, "p2": poly2}
+
+                   calcRoute(car_d, request, false)
+
                    i++;
                }
 {#				console.log("initiating cars");#}
@@ -147,32 +152,25 @@
 {#				}#}
 			}
 
-			function calcRoute(request, redirect) {
+			function calcRoute(car, request, redirect) {
 				console.log("Calculating Routes");
 			    if (timerHandle) {
 			        clearTimeout(timerHandle);
 			    }
-			    if (marker) {
-			        marker.setMap(null);
-			    }
-			    polyline.setMap(null);
-			    poly2.setMap(null);
-			    directionsDisplay.setMap(null);
-			    polyline = new google.maps.Polyline({
-			        path: [],
-			        strokeColor: '#FF0000',
-			        strokeWeight: 3
-			    });
-			    poly2 = new google.maps.Polyline({
-			        path: [],
-			        strokeColor: '#FF0000',
-			        strokeWeight: 3
-			    });
+{#			    if (car["marker"]) {#}
+{#			        car["marker"].setMap(null);#}
+{#			    }#}
+			    //polyline.setMap(null);
+			    //poly2.setMap(null);
+{#			    directionsDisplay.setMap(null);#}
+
 			    var rendererOptions = {
 			        suppressMarkers: true,
 			        map: map
 			    }
-			    directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+                var directionsService = new google.maps.DirectionsService();
+
+			    var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
 
 			    directionsService.route(request, function(response, status) {
 			        if (status == google.maps.DirectionsStatus.OK) {
@@ -187,13 +185,12 @@
 			            for (i = 0; i < legs.length; i++) {
 			                if (i == 0) {
 			                    if (redirect) {
-			                        startLocation.latlng = marker.position;
+			                        startLocation.latlng = car["marker"].position;
 			                        startLocation.address = legs[i].start_address;
 			                    } else {
 			                        startLocation.latlng = legs[i].start_location;
 			                        startLocation.address = legs[i].start_address;
 			                    }
-			                    marker = createMarkerWithImage(startLocation.latlng, "user1", "static/jan-64.png");
 			                }
 			                endLocation.latlng = legs[i].end_location;
 			                endLocation.address = legs[i].end_address;
@@ -201,18 +198,20 @@
 			                for (j = 0; j < steps.length; j++) {
 			                    var nextSegment = steps[j].path;
 			                    for (k = 0; k < nextSegment.length; k++) {
-			                        polyline.getPath().push(nextSegment[k]);
+			                        car["p1"].getPath().push(nextSegment[k]);
 			                        bounds.extend(nextSegment[k]);
 
 			                    }
 			                }
 			            }
-			            polyline.setMap(map);
+			            car["p1"].setMap(map);
+                        car["renderer"] = directionsDisplay
 			            // map.fitBounds(bounds);
 			            // map.setZoom(18);
-			            startAnimation();
+			            startAnimation(car);
 			        }
 			    });
+
 			}
 			var redirectionsService;
 			var redirectingDisplay;
@@ -276,19 +275,19 @@
 			var lastVertex = 1;
 
 			//=============== animation functions ======================
-			function updatePoly(d) {
+			function updatePoly(car, d) {
 
-			    if (poly2.getPath().getLength() > 20) {
-			        poly2 = new google.maps.Polyline([polyline.getPath().getAt(lastVertex - 1)]);
+			    if (car["p2"].getPath().getLength() > 20) {
+			        car["p2"] = new google.maps.Polyline([car["p1"].getPath().getAt(lastVertex - 1)]);
 
 			    }
-			    if (polyline.GetIndexAtDistance(d) < lastVertex + 2) {
-			        if (poly2.getPath().getLength() > 1) {
-			            poly2.getPath().removeAt(poly2.getPath().getLength() - 1)
+			    if (car["p1"].GetIndexAtDistance(d) < lastVertex + 2) {
+			        if (car["p2"].getPath().getLength() > 1) {
+			            car["p2"].getPath().removeAt(car["p2"].getPath().getLength() - 1)
 			        }
-			        poly2.getPath().insertAt(poly2.getPath().getLength(), polyline.GetPointAtDistance(d));
+			        car["p2"].getPath().insertAt(car["p2"].getPath().getLength(), car["p1"].GetPointAtDistance(d));
 			    } else {
-			        poly2.getPath().insertAt(poly2.getPath().getLength(), endLocation.latlng);
+			        car["p2"].getPath().insertAt(car["p2"].getPath().getLength(), endLocation.latlng);
 			    }
 			}
 
@@ -301,40 +300,45 @@
 			    return false;
 			}
 
-			function animate(d) {
-			    if (d > eol) {
-			        map.panTo(endLocation.latlng);
-			        marker.setPosition(endLocation.latlng);
-			        return;
+			function animate(car, d) {
+                var p = car["p1"].GetPointAtDistance(d);
+			    if (d > car["eol"]) {
+                    car["renderer"].setMap(null);
+                    car["p1"].setMap(null);
+                    car["p2"].setMap(null);
+			        //map.panTo(endLocation.latlng);
+                    car["marker"].setPosition();
+
+                    return
 			    }
-			    var p = polyline.GetPointAtDistance(d);
+			    var p = car["p1"].GetPointAtDistance(d);
 			    //map.panTo(p);
-			    for (var i = 0; i < requestMarkers.length; i++) {
-			        if (equals(requestMarkers[i].getPosition(), marker.getPosition())) {
-			            console.log("treffer");
-			            movingMarkers.push(requestMarkers[i]);
-			            requestMarkers = requestMarkers.slice(0, i) + requestMarkers.slice(i + 1, requestMarkers.length);
-			        }
-			    }
-			    for (movingMarker in movingMarkers) {
-			        movingMarkers[movingMarker].setPosition(p);
-			    }
-			    marker.setPosition(p);
-			    updatePoly(d);
-			    timerHandle = setTimeout("animate(" + (d + step) + ")", tick);
+{#			    for (var i = 0; i < requestMarkers.length; i++) {#}
+{#			        if (equals(requestMarkers[i].getPosition(), marker.getPosition())) {#}
+{#			            console.log("treffer");#}
+{#			            movingMarkers.push(requestMarkers[i]);#}
+{#			            requestMarkers = requestMarkers.slice(0, i) + requestMarkers.slice(i + 1, requestMarkers.length);#}
+{#			        }#}
+{#			    }#}
+{#			    for (movingMarker in movingMarkers) {#}
+{#			        movingMarkers[movingMarker].setPosition(p);#}
+{#			    }#}
+			    car["marker"].setPosition(p);
+			    updatePoly(car, d);
+			    timerHandle = setTimeout(function() {animate(car, (d + step))}, tick);
 			}
 
-			function startAnimation() {
-			    eol = polyline.Distance();
+			function startAnimation(car) {
+			    car["eol"] = car["p1"].Distance();
 			    // map.setCenter(polyline.getPath().getAt(0));
 
-			    poly2 = new google.maps.Polyline({
-			        path: [polyline.getPath().getAt(0)],
+			    car["p2"] = new google.maps.Polyline({
+			        path: [car["p1"].getPath().getAt(0)],
 			        strokeColor: "#0000FF",
 			        strokeWeight: 10
 			    });
 
-			    setTimeout("animate(50)", 2000);
+			    setTimeout(function(){animate(car, 50)}, 2000);
 			}
 
 			//=============== ~animation funcitons =====================
