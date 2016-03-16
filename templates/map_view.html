@@ -184,6 +184,11 @@
 
                                 }
                             }
+                            var now = new Date();
+                            console.log(now.getDate());
+                            now.setSeconds(now.getSeconds() + duration_original);
+                            var eta = now.toISOString();
+                            document.getElementById("eta").innerHTML = "Estimated Time of Arrival: " + eta.split("T")[0] + " " + eta.split("T")[1].split(".")[0];
                         }
                         polyline.setMap(map);
                         // map.fitBounds(bounds);
@@ -231,6 +236,11 @@
                         console.log("redirect: " + duration_redirected);
                         var time_difference = duration_redirected- duration_original;
                         document.getElementById("duration_difference").innerHTML = "Travel Time Difference: " + Math.ceil(time_difference/60) + " minutes";
+                        var now = new Date();
+                        console.log(now.getDate());
+                        now.setSeconds(now.getSeconds() + duration_redirected);
+                        var eta = now.toISOString();
+                        document.getElementById("eta").innerHTML = "Estimated Time of Arrival: " + eta.split("T")[0] + " " + eta.split("T")[1].split(".")[0];
                     }
                 })
                 requestMarkers.push(createMarkerWithImage(new google.maps.LatLng({{ waypoints }}[0][0], {{ waypoints }}[0][1]), "user2", "static/robert-64.png"));
@@ -329,7 +339,8 @@
     <body onload="initMap(); initRequest();">
         <button type="button" onclick="receiveRequest()">Click Me!</button> 
         <button type="button" onclick="acceptRequest()">Click Me!</button> 
-        <div id="duration_difference"></div>
+        <div id="duration_difference"></div></br>
+        <div id="eta"></div>
         <div id="map_canvas" style="width:100%;height:90%;"></div>
     </body>
 </html>
