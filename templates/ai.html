@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+		<title>Google Maps JavaScript API v3 Example: Directions Complex</title>
+
+		<style>
+			html{height:100%;}
+			body{height:100%;margin:0px;font-family: Helvetica,Arial;}
+		</style>
+		<script type="text/javascript" src="http://maps.google.com/maps/api/js?key=AIzaSyBxmF8yMl0hBcK2-YnKpdB16V50ZOhcq_M&sensor=false"></script>
+		<script type ="text/javascript" src="static/v3_epoly.js"></script>
+		<script type="text/javascript"> 
+			var map;
+			var directionDisplay;
+			var directionsService;
+			var stepDisplay;
+			var markerArray = [];
+			var position;
+			var marker = null;
+			var polyline = null;
+			var poly2 = null;
+			var speed = 0.000005,
+			    wait = 1;
+			var infowindow = null;
+
+			var myPano;
+			var panoClient;
+			var nextPanoId;
+			var timerHandle = null;
+			var central = new google.maps.LatLng({lat: {{ central_lat }}, lng: {{ central_lng }}});
+			var travelMode = google.maps.DirectionsTravelMode.DRIVING;
+
+			function createMarkerWithImage(latlng, label, img) {
+			        var contentString = '<b>' + label + '</b>';
+			        var marker = new google.maps.Marker({
+			            position: latlng,
+			            map: map,
+			            title: label,
+			            zIndex: Math.round(latlng.lat() * -100000) << 5,
+			            icon: img,
+			        });
+
+			        google.maps.event.addListener(marker, 'click', function() {
+			            infowindow.setContent(contentString);
+			            infowindow.open(map, marker);
+			        });
+			        return marker;
+			    }
+
+			function createMarker(latlng, label) {
+			    var contentString = '<b>' + label + '</b>';
+			    var marker = new google.maps.Marker({
+			        position: latlng,
+			        map: map,
+			        title: label,
+			        icon: "static/caricon.png",
+			        zIndex: Math.round(latlng.lat() * -100000) << 5
+			    });
+
+			    google.maps.event.addListener(marker, 'click', function() {
+			        infowindow.setContent(contentString);
+			        infowindow.open(map, marker);
+			    });
+			    return marker;
+			}
+
+			function initMap() {
+			    infowindow = new google.maps.InfoWindow({
+			        size: new google.maps.Size(150, 50)
+			    });
+
+			    directionsService = new google.maps.DirectionsService();
+			    var myOptions = {
+			        zoom: 13,
+			        mapTypeId: google.maps.MapTypeId.ROADMAP
+			    }
+			    map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+			    address = 'Hannover'
+			    geocoder = new google.maps.Geocoder();
+			    geocoder.geocode({
+			        'address': address
+			    }, function(results, status) {
+			        map.setCenter(results[0].geometry.location);
+			    });
+
+
+			    var rendererOptions = {
+			        map: map
+			    }
+			    directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+
+
+			    stepDisplay = new google.maps.InfoWindow();
+			    polyline = new google.maps.Polyline({
+			        path: [],
+			        strokeColor: '#FF0000',
+			        strokeWeight: 3
+			    });
+			    poly2 = new google.maps.Polyline({
+			        path: [],
+			        strokeColor: '#FF0000',
+			        strokeWeight: 3
+			    });
+			}
+
+
+			var steps = []
+
+			function initRequest() {
+			    var myWaypoints = [];
+			    var request = {
+			        origin: start,
+			        destination: end,
+			        waypoints: myWaypoints,
+			        travelMode: travelMode
+			    };
+			    createMarker(new google.maps.LatLng(start), "Starting Point");
+			    createMarker(new google.maps.LatLng(end), "Target Point");
+			    calcRoute(request, false)
+			}
+
+			function initCars() {
+				console.log("initiating cars");
+				var carCount = Math.round(Math.random() * 10);
+				console.log(carCount);
+				for (var i = 0; i < carCount; i++){
+					var factorLat = Math.min(Math.random() + 0.5, 0.98)/20;
+					var factorLng = Math.min(Math.random() + 0.5, 0.98)/20;
+					var startingLocation = new google.maps.LatLng(central.lat() + factorLat, central.lng() + factorLng); 
+					createMarker(startingLocation, "carNum: " + i);
+				}
+			}
+
+			function calcRoute(request, redirect) {
+				console.log("Calculating Routes");
+			    if (timerHandle) {
+			        clearTimeout(timerHandle);
+			    }
+			    if (marker) {
+			        marker.setMap(null);
+			    }
+			    polyline.setMap(null);
+			    poly2.setMap(null);
+			    directionsDisplay.setMap(null);
+			    polyline = new google.maps.Polyline({
+			        path: [],
+			        strokeColor: '#FF0000',
+			        strokeWeight: 3
+			    });
+			    poly2 = new google.maps.Polyline({
+			        path: [],
+			        strokeColor: '#FF0000',
+			        strokeWeight: 3
+			    });
+			    var rendererOptions = {
+			        suppressMarkers: true,
+			        map: map
+			    }
+			    directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+
+			    directionsService.route(request, function(response, status) {
+			        if (status == google.maps.DirectionsStatus.OK) {
+			            directionsDisplay.setDirections(response);
+			            var bounds = new google.maps.LatLngBounds();
+			            var route = response.routes[0];
+			            startLocation = new Object();
+			            endLocation = new Object();
+
+			            var path = response.routes[0].overview_path;
+			            var legs = response.routes[0].legs;
+			            for (i = 0; i < legs.length; i++) {
+			                if (i == 0) {
+			                    if (redirect) {
+			                        startLocation.latlng = marker.position;
+			                        startLocation.address = legs[i].start_address;
+			                    } else {
+			                        startLocation.latlng = legs[i].start_location;
+			                        startLocation.address = legs[i].start_address;
+			                    }
+			                    marker = createMarkerWithImage(startLocation.latlng, "user1", "static/jan-64.png");
+			                }
+			                endLocation.latlng = legs[i].end_location;
+			                endLocation.address = legs[i].end_address;
+			                var steps = legs[i].steps;
+			                for (j = 0; j < steps.length; j++) {
+			                    var nextSegment = steps[j].path;
+			                    for (k = 0; k < nextSegment.length; k++) {
+			                        polyline.getPath().push(nextSegment[k]);
+			                        bounds.extend(nextSegment[k]);
+
+			                    }
+			                }
+			            }
+			            polyline.setMap(map);
+			            // map.fitBounds(bounds);
+			            // map.setZoom(18);
+			            startAnimation();
+			        }
+			    });
+			}
+			var redirectionsService;
+			var redirectingDisplay;
+			var requestMarkers = [];
+			var movingMarkers = [];
+
+/*
+			function receiveRequest() {
+			    var waypoints = []
+			    waypoints.push({location: marker.position}); 
+			    {% for point in waypoints %}
+			    var mypoint = {{ point }};
+			    waypoints.push({
+			        location: new google.maps.LatLng(mypoint[0], mypoint[1])
+			    }); 
+			    {% endfor %}
+			    if (redirectingDisplay == null) {
+			        redirectingDisplay = new google.maps.DirectionsRenderer({
+			            suppressMarkers: true,
+			            map: map
+			        })
+			    }
+			    if (redirectionsService == null) {
+			        redirectionsService = new google.maps.DirectionsService();
+			    }
+			    var rideSharingRequest = {
+			        origin: start,
+			        destination: end,
+			        waypoints: waypoints,
+			        travelMode: travelMode
+			    }
+			    redirectionsService.route(rideSharingRequest, function(response, status) {
+			        if (status == google.maps.DirectionsStatus.OK) {
+			            redirectingDisplay.setDirections(response)
+			        }
+			    })
+			    requestMarkers.push(createMarkerWithImage(new google.maps.LatLng({{ waypoints }}[0][0], {{ waypoints }}[0][1]), "user2", "static/robert-64.png"));
+			}
+
+			function acceptRequest() {
+			    var waypoints = [];
+			    {% for point in waypoints %}
+			    var mypoint = {{ point }};
+			    waypoints.push({ location: new google.maps.LatLng(mypoint[0], mypoint[1])}); 
+			    {% endfor %}
+			    var redirectRequest = {
+			        origin: marker.position,
+			        destination: end,
+			        waypoints: waypoints,
+			        travelMode: travelMode
+			    };
+			    calcRoute(redirectRequest, true)
+			}
+*/
+			var step = 30;
+			var tick = 100;
+			var eol;
+			var k = 0;
+			var stepnum = 0;
+			var speed = "";
+			var lastVertex = 1;
+
+			//=============== animation functions ======================
+			function updatePoly(d) {
+
+			    if (poly2.getPath().getLength() > 20) {
+			        poly2 = new google.maps.Polyline([polyline.getPath().getAt(lastVertex - 1)]);
+
+			    }
+			    if (polyline.GetIndexAtDistance(d) < lastVertex + 2) {
+			        if (poly2.getPath().getLength() > 1) {
+			            poly2.getPath().removeAt(poly2.getPath().getLength() - 1)
+			        }
+			        poly2.getPath().insertAt(poly2.getPath().getLength(), polyline.GetPointAtDistance(d));
+			    } else {
+			        poly2.getPath().insertAt(poly2.getPath().getLength(), endLocation.latlng);
+			    }
+			}
+
+			function equals(latLng1, latLng2) {
+			    var distance = (latLng1.lat() - latLng2.lat()) * (latLng1.lat() - latLng2.lat()) + (latLng1.lng() - latLng2.lng()) * (latLng1.lng() - latLng2.lng());
+			    distance = Math.sqrt(distance);
+			    if (distance < 0.0001) {
+			        return true;
+			    }
+			    return false;
+			}
+
+			function animate(d) {
+			    if (d > eol) {
+			        map.panTo(endLocation.latlng);
+			        marker.setPosition(endLocation.latlng);
+			        return;
+			    }
+			    var p = polyline.GetPointAtDistance(d);
+			    //map.panTo(p);
+			    for (var i = 0; i < requestMarkers.length; i++) {
+			        if (equals(requestMarkers[i].getPosition(), marker.getPosition())) {
+			            console.log("treffer");
+			            movingMarkers.push(requestMarkers[i]);
+			            requestMarkers = requestMarkers.slice(0, i) + requestMarkers.slice(i + 1, requestMarkers.length);
+			        }
+			    }
+			    for (movingMarker in movingMarkers) {
+			        movingMarkers[movingMarker].setPosition(p);
+			    }
+			    marker.setPosition(p);
+			    updatePoly(d);
+			    timerHandle = setTimeout("animate(" + (d + step) + ")", tick);
+			}
+
+			function startAnimation() {
+			    eol = polyline.Distance();
+			    // map.setCenter(polyline.getPath().getAt(0));
+
+			    poly2 = new google.maps.Polyline({
+			        path: [polyline.getPath().getAt(0)],
+			        strokeColor: "#0000FF",
+			        strokeWeight: 10
+			    });
+
+			    setTimeout("animate(50)", 2000);
+			}
+
+			//=============== ~animation funcitons =====================
+
+		</script>
+	</head>
+	<body onload="initMap(); initCars();">
+		<div id="map_canvas" style="width:100%;height:90%;"></div>
+	</body>
+</html>

@@ -51,6 +51,10 @@ def ask(name):
     else:
         return jsonify(take=False)
 
+@app.route('/ai')
+def ai():
+    central =  {"lat": 52.3795836, "lng": 9.6213878}
+    return render_template("ai.html", central_lat = central["lat"], central_lng = central["lng"])
 
 if __name__ == '__main__':
     app.run()
