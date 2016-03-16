@@ -17,8 +17,8 @@ def db():
     #cursor.execute("SELECT * FROM TEAM20_USER01.TEST")
     #result = cursor.fetchone()
     #if result:
-     #   print result[0]
-      #  return result
+    #   print result[0]
+    #   return result
     return "No Results"
 
 @app.route('/app')
