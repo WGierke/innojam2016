@@ -20,24 +20,28 @@ class Location(Base):
 
 class Tour(Base):
     __tablename__ = 'tours'
+    id = Column(Integer, primary_key=True)
     type = Column(VARCHAR(50))
-    driver = Column(VARCHAR(50), ForeignKey=True)
+    driver = Column(VARCHAR(50), ForeignKey("drivers.name"))
     price = Column(Float)
-    timeuntilarrivel = Column(VARCHAR(50))
-    duration = Column(VARCHAR(50))
+    time_until_arrivel = Column(Integer)
+    duration = Column(Integer)
 
-     def __init__(self, type, driver, price, timeuntilarrival, duration):
+    def __init__(self, id, type, driver, price, time_until_arrival, duration):
+        self.id = id
         self.type = type
         self.driver = driver
         self.price = price
-        self.timeuntilarrivel = timeuntilarrival
+        self.time_until_arrivel = time_until_arrival
         self.duration = duration
+
 
 class Driver(Base):
     __tablename__ = 'drivers'
     name = Column(VARCHAR(50), primary_key=True)
     picture = Column(VARCHAR(50))
     car = Column(VARCHAR(50))
+    tours = relationship("Tour")
 
     def __init__(self, name, picture, car):
         self.name = name
