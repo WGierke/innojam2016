@@ -1,0 +1,11 @@
+<mvc:View controllerName="JoinMyRide.controller.Detail" xmlns:commons="sap.ui.commons" xmlns:footerbar="sap.ushell.ui.footerbar"
+	xmlns:mvc="sap.ui.core.mvc" xmlns:sap.ui.core="sap.ui.core" xmlns:sap.ui.layout="sap.ui.layout" xmlns:semantic="sap.m.semantic"
+	xmlns:vbm="sap.ui.vbm" xmlns="sap.m">
+	<semantic:DetailPage busy="{detailView&gt;/busy}" busyIndicatorDelay="{detailView&gt;/delay}" id="page" navButtonPress="onNavBack"
+		showNavButton="{device&gt;/system/phone}" title="{i18n&gt;searchRideMasterTitle}">
+		<semantic:content>
+			<vbm:GeoMap closeWindow="onCloseDetail" height="100%" id="vbi" openWindow="onOpenDetail" width="100%" xmlns:sap.ui.layout="sap.ui.layout"
+				zoomChanged="onZoomChanged"></vbm:GeoMap>
+		</semantic:content>
+	</semantic:DetailPage>
+</mvc:View>

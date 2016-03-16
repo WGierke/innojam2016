@@ -1,0 +1,45 @@
+<mvc:View controllerName="JoinMyRide.controller.SearchRide" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:mvc="sap.ui.core.mvc"
+	xmlns:sap.ui.core="sap.ui.core" xmlns:sap.ui.layout.form="sap.ui.layout.form" xmlns:sap.ui.layout="sap.ui.layout" xmlns="sap.m">
+	<App>
+		<pages>
+			<Page title="{i18n&gt;searchRideTitle}">
+				<content>
+					<sap.ui.layout.form:SimpleForm editable="true" id="__form0" layout="ResponsiveGridLayout" xmlns:sap.ui.layout.form="sap.ui.layout.form">
+						<sap.ui.layout.form:content>
+							<Label id="__label0" text="{i18n&gt;searchPickupPositionLabel}" width="100%"/>
+							<Input fieldWidth="100%" id="inputSourceLocation" placeholder="{i18n&gt;searchPickupPositionPlaceholder}" showSuggestion="true"
+								suggestionItems="{/Locations}" value="{/sourceLocation}" width="100%">
+								<suggestionItems>
+									<sap.ui.core:ListItem additionalText="{City}" text="{Street}"/>
+								</suggestionItems>
+							</Input>
+							<Label id="__label1" text="{i18n&gt;searchDestinationLabel}" width="100%"/>
+							<Input change="onDestinationInputChange" id="__input2" placeholder="{i18n&gt;searchDestinationPlaceholder}" showSuggestion="true"
+								suggestionItems="{/Locations}" value="{/destinationLocation}" width="100%">
+								<suggestionItems>
+									<sap.ui.core:ListItem additionalText="{City}" text="{Street}"/>
+								</suggestionItems>
+							</Input>
+							<Label id="__label2" text="{i18n&gt;searchDateLabel}" width="100%"/>
+							<DateTimeInput placeholder="{i18n&gt;searchDatePlaceholder}" type="DateTime" value="{/startDateTime}" width="100%"/></sap.ui.layout.form:content>
+					</sap.ui.layout.form:SimpleForm>
+					<List headerText="{i18n&gt;tourListTitle}" id="tourList" noDataText="{i18n&gt;noToursFound}"/>
+				</content>
+				<headerContent>
+					<Button icon="sap-icon://locate-me" id="__button1" press="onLocateButtonPress" text="" width="100%"/>
+				</headerContent>
+				<footer>
+					<Bar id="__bar0">
+						<customData>
+							<sap.ui.core:CustomData id="__data10" key="sap-ui-fastnavgroup" value="true" writeToDom="true"/>
+						</customData>
+						<contentRight>
+							<Button icon="sap-icon://search" id="__button0" press="onSearchPress" tap="onSearchPress" text="{i18n&gt;searchStartButton}" type="Accept"
+								width="150px"/>
+						</contentRight>
+					</Bar>
+				</footer>
+			</Page>
+		</pages>
+	</App>
+</mvc:View>

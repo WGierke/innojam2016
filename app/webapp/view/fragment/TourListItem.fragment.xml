@@ -1,0 +1,14 @@
+<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns="sap.m">
+	<ObjectListItem icon="{Driver/Picture}" number="{Price}" numberUnit="EUR" press="onTourClick" tap="onTourListItemClick"
+		title="{Driver/Name}" type="Active">
+		<!--<firstStatus>-->
+		<!--	<ObjectStatus state="{= ${TimeUntilArrival} > 5 ? 'Error' : 'Success' }" text="{TimeUntilArrival} {i18n>minutes}"/>-->
+		<!--</firstStatus>-->
+		<firstStatus>
+			<ObjectStatus state="{= ${Duration} &gt; 1.9 ? 'Error' : 'Success' }" text="{Duration} {i18n&gt;hours}"/>
+		</firstStatus>
+		<attributes>
+			<ObjectAttribute text="{Driver/Car}"/>
+		</attributes>
+	</ObjectListItem>
+</core:FragmentDefinition>

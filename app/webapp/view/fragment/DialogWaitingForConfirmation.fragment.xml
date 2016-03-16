@@ -1,0 +1,4 @@
+<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns="sap.m">
+	<BusyDialog close="onDialogClosed" showCancelButton="true" text="{i18n>waitingForConfirmationMessage}"
+		title="{i18n>waitingForConfirmationTitle}"/>
+</core:FragmentDefinition>
