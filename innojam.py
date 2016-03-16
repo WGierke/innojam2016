@@ -8,11 +8,13 @@ from models import *
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
+
 admin = Admin(app, template_mode='bootstrap3')
 admin.add_view(ModelView(Location, db_session))
 admin.add_view(ModelView(Driver, db_session))
 admin.add_view(ModelView(Tour, db_session))
 #connection = pyhdb.connect(host="172.20.40.16", port=30015, user="TEAM20_USER01", password="c35vfdE0ivk6553")
+
 
 
 @app.route('/')
@@ -35,7 +37,10 @@ def app_view():
 
 @app.route('/map')
 def map_view():
-    return render_template("map_view.html")
+    start = {"lat": 52.3795836, "lng": 9.6213878}
+    end = {"lat": 52.41, "lng": 10.6368185}
+    waypoints = [[52.4207803,9.696139]]
+    return render_template("map_view.html", start_lat=start["lat"], start_lng=start["lng"], end_lat=end["lat"], end_lng=end["lng"], waypoints=waypoints)
 
 if __name__ == '__main__':
     app.run()
