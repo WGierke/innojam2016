@@ -1,5 +1,6 @@
 import speech_recognition as sr
 import os
+import time
 
 recognizer = sr.Recognizer()
 recognizer.energy_threshold = 3100
@@ -9,12 +10,15 @@ def say(s):
 
 def ask_take(name, demo=False):
     say("{} is traveling to a location on your route. Do you want to pick {} up".format(name, name))
-    if said_yes(demo=demo) or demo:
-        say("Great, please follow the new route and pick him up")
-        return True
-    else:
-        say("Ok, have a nice trip")
-        return False
+    time.sleep(3)
+    say("Great, please follow the new route and pick him up")
+    return True
+    # if said_yes(demo=demo) or demo:
+    #     say("Great, please follow the new route and pick him up")
+    #     return True
+    # else:
+    #     say("Ok, have a nice trip")
+    #     return False
 
 def get_audio():
     with sr.Microphone() as source:

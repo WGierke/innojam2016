@@ -3,7 +3,7 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 import pyhdb
 import json
-from database import db_session
+#from database import db_session
 from models import *
 from navi_speech import ask_take
 
@@ -11,10 +11,10 @@ app = Flask(__name__)
 app.config["DEBUG"] = True
 app.config["DEMO"] = False
 
-admin = Admin(app, template_mode='bootstrap3')
-admin.add_view(ModelView(Location, db_session))
-admin.add_view(ModelView(Driver, db_session))
-admin.add_view(ModelView(Tour, db_session))
+# admin = Admin(app, template_mode='bootstrap3')
+# admin.add_view(ModelView(Location, db_session))
+# admin.add_view(ModelView(Driver, db_session))
+# admin.add_view(ModelView(Tour, db_session))
 #connection = pyhdb.connect(host="172.20.40.16", port=30015, user="TEAM20_USER01", password="c35vfdE0ivk6553")
 
 

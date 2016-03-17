@@ -17,6 +17,9 @@
         <script type ="text/javascript" src="static/v3_epoly.js"></script>
         <script type="text/javascript"> 
             var map;
+            var popup;
+            var eta;
+            var time_difference;
             var directionDisplay;
             var directionsService;
             var stepDisplay;
@@ -79,7 +82,7 @@
 
                 directionsService = new google.maps.DirectionsService();
                 var myOptions = {
-                    zoom: 10,
+                    zoom: 7,
                     mapTypeId: google.maps.MapTypeId.ROADMAP
                 }
                 map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
@@ -201,7 +204,7 @@
                         }
                         polyline.setMap(map);
                         // map.fitBounds(bounds);
-                        // map.setZoom(18);
+                        //map.setZoom(5);
                         startAnimation();
                     }
                 });
@@ -243,20 +246,32 @@
                           duration_redirected += parseInt(response.routes[0].legs[i].duration.value);
                         }
                         console.log("redirect: " + duration_redirected);
-                        var time_difference = duration_redirected- duration_original;
-                        document.getElementById("duration_difference").innerHTML = "Travel Time Difference: " + Math.ceil(time_difference/60) + " minutes";
+                        time_difference = duration_redirected- duration_original;
+                        //document.getElementById("duration_difference").innerHTML = "Travel Time Difference: " + Math.ceil(time_difference/60) + " minutes";
                         var now = new Date();
                         console.log(now.getDate());
                         now.setSeconds(now.getSeconds() + duration_redirected);
-                        var eta = now.toISOString();
+                        eta = now.toISOString();
                         document.getElementById("eta").innerHTML = "Estimated Time of Arrival: " + eta.split("T")[0] + " " + eta.split("T")[1].split(".")[0];
+                                    var m = createMarkerWithImage(new google.maps.LatLng({{ waypoints }}[0][0], {{ waypoints }}[0][1]), "Jan", "static/jan-64.png")
+                        var content = "<p>Bob is travelling to a location on your route. Do you want to pick him up?</p>"
+                                      + "<p>Travel time difference: +" + Math.ceil(time_difference/60)  + " minutes.</p>" +
+                                       '<div style="margin=auto; width=200px"><button type="button" onclick=acceptRequest>Yes</button>' +
+                                        '<button type="button">No</button></div>'
+                        popup = new google.maps.InfoWindow({
+                             content: content
+                  });
+
+                popup.open(map, m)
+                        requestMarkers.push(m);
                     }
                 })
-                requestMarkers.push(createMarkerWithImage(new google.maps.LatLng({{ waypoints }}[0][0], {{ waypoints }}[0][1]), "Jan", "static/jan-64.png"));
+
+
                 setTimeout(ask_accept, 100);
             }
             function ask_accept(){
-                $.get("{{ url_for("ask", name="Jan")}}", function(data) {
+                $.get("{{ url_for("ask", name="Bob")}}", function(data) {
                     if (data.take == true) {
                         acceptRequest();
                     }
@@ -277,12 +292,13 @@
                     waypoints: waypoints,
                     travelMode: travelMode
                 };
+                popup.close()
                 calcRoute(redirectRequest, true)
             }
 
             function rejectRequest(){};
 
-            var step = 20;
+            var step = 80;
             var tick = 10;
             var eol;
             var k = 0;
@@ -368,7 +384,7 @@
         </script>
     </head>
     <body id="body" onload="initMap(); initRequest();" style="background-color: black">
-        <div id="duration_difference"></div></br>
+        <div id="duration_difference" style="color: white; text-align: center; padding-bottom: 2px"></div></br>
         <div id="eta" style="color: white; text-align: center; padding-bottom: 10px"></div>
         <div id="map_canvas" style="margin-left: 3%; width:94%;height:90%;" onkeypress="receiveRequest()"></div>
     </body>
